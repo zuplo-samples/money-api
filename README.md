@@ -86,7 +86,7 @@ This API is configured to be deployed to Zuplo. You can find the git repo
 to do is click on the deploy button below and Zuplo will automatically create a
 copy of the project and deploy it for you 😎
 
-[![Foo](https://cdn.zuplo.com/www/zupit.svg)](http://portal.zuplo.com/zup-it?sourceRepoUrl=https://github.com/zuplo/sample-money-api.git)
+[![Foo](https://cdn.zuplo.com/www/zupit.svg)](http://portal.zuplo.com/zup-it?sourceRepoUrl=https://github.com/zuplo-samples/sample-money-api.git)
 
 You should see the below screen. Enter a custom name for your project or accept
 the default suggestion. Click **Zup It!** to complete the deployment.
