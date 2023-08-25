@@ -4,6 +4,7 @@ dist/
 node_modules/
 .env
 .husky/_
+.npmrc
 
 # OS Stuff
 .DS_Store

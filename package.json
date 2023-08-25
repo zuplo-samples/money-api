@@ -10,6 +10,7 @@
     "postinstall": "husky install"
   },
   "dependencies": {
+    "@zuplo/cli": "^1.45.0-local-development.18",
     "@zuplo/core": "^5.1148.0",
     "@zuplo/react-api-key-manager": "^1.0.0",
     "@zuplo/runtime": "^5.1148.0"
