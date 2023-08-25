@@ -1,33 +1,23 @@
-# Money API Example
+# Money API Sample
 
 This is a repository containing a sample application that shows how to monetize your APIs using Zuplo.
 
-It uses the following technologies:
-
-- [Zuplo](https://zuplo.com) - API Gateway
-- [Stripe](https://stripe.com) - Payment Processor
-- [Auth0](https://auth0.com) - Authentication Provider
-- [NextJS](https://nextjs.org) - Web App Framework
+> Zuplo helps you ship great APIs from day one. Startups and big enterprises ship API auth, rate limiting, and developer documentation with amazing DX using our serverless API Gateway deployed at the edge. You can start free at zuplo.com and ship an API in minutes.
 
 ## How it works
 
 This example shows how to monetize an API using Zuplo. It uses a simple ToDo API as an example.
 
-Zuplo is used by companies that want to ship production-ready APIs to their customers. It offers beautiful Developer Docs, API Key authentication, rate-limiting and more.
-
 This sample application consists of 3 parts:
 
-- A Zuplo API Gateway that secures your API and allows you to monetize it
-- A simple web-app using [NextJS](https://nextjs.org) that allows users to sign up and subscribe to your API
-- A Stripe subscription product that allows your users to pay for the exact number of requests they make to your API
-
-![Money API Components](./assets/money-api-components.png)
+- **Zuplo API Gateway**: secures your API and allows you to monetize it
+- **Web app (NextJS)**: allows users to sign up and subscribe to the API
+- **Auth0**: sign up and log in to web-app
+- **Stripe**: subscribe and pay for the exact number of requests you make.
 
 Your customers will be able to sign up to use your API using the web-app and make requests to your API using an API Key that they can generate in the Zuplo Developer Portal.
 
 ## Getting Started
-
-[Fork](https://github.com/zuplo/money-api-example/fork) the repository as you will need to connect Zuplo to your own repository.
 
 ### Step 1 - Create a Stripe Subscription Product
 
@@ -39,15 +29,15 @@ Steps:
 
 2. Create a subscription Product
 
-Go to* **_Products_** and click **_Add a product_**.  
+Go to\* **_Products_** and click **_Add a product_**.
 
-Now create a product with the following details: 
+Now create a product with the following details:
 
 ![Stripe Add Product Step 2](./assets/stripe-add-product-step-2.png)
 
 3. Create a Pricing Table to embed on the web-app
 
-Go back to _Product_ menu and click on the _Pricing tables_. 
+Go back to _Product_ menu and click on the _Pricing tables_.
 
 Fill in the details as shown below:
 
@@ -55,7 +45,7 @@ Fill in the details as shown below:
 
 4. Add the Pricing table to your website
 
-Copy the Pricing Table code which will be used in the web app: 
+Copy the Pricing Table code which will be used in the web app:
 
 ![](./assets/stripe-add-pricing-table-4.png)
 
@@ -77,7 +67,7 @@ Paste the code in the file [`/dashboard/components/stripe-pricing-table.tsx`](./
 
 This Key will be used in the next step to configure the Zuplo API Gateway.
 
-Copy the Stripe Secret Key from the top right menu **_Developers > API Keys > Copy Secret Key_**. 
+Copy the Stripe Secret Key from the top right menu **_Developers > API Keys > Copy Secret Key_**.
 
 ### Step 2 - Deploy the API with Zuplo
 
@@ -138,7 +128,7 @@ Clone the project by running the following command. You will be asked to name yo
 
 ```sh
 npx create-next-app --example \
-  https://github.com/zuplo/sample-money-api-dashboard
+  https://github.com/zuplo-samples/money-api-dashboard
 ```
 
 We'll now need to get the Auth Translation API url from the previous steps to
@@ -171,6 +161,7 @@ start the Developer Console.
     ```
     npm run dev
     ```
+
 ## Step 4 - Try it out!
 
 You can now go through the flow of signing up to your API, creating an API Key, and making requests to your API.
