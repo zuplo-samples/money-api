@@ -1,5 +1,5 @@
-import { ZuploContext, ZuploRequest } from "@zuplo/runtime";
+import { ZuploRequest } from "@zuplo/runtime";
 
-export default async function (request: ZuploRequest, context: ZuploContext) {
+export default async function (request: ZuploRequest) {
   return request.user;
 }

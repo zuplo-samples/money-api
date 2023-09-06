@@ -1,12 +1,6 @@
-import {
-  Logger,
-  MemoryZoneReadThroughCache,
-  ZuploContext,
-  ZuploRequest,
-} from "@zuplo/runtime";
+import { Logger } from "@zuplo/runtime";
 import { environment } from "@zuplo/runtime";
 import { ErrorResponse } from "../types";
-import { getUserInfo } from "modules/utils/user-info";
 
 const STRIPE_API_KEY = environment.STRIPE_API_KEY;
 
@@ -54,7 +48,7 @@ export const getStripeCustomer = async (
   }
 };
 
-type ActiveStripeSubscriptions = {
+export type ActiveStripeSubscriptions = {
   id: string;
   customer: string;
   plan: {
@@ -65,53 +59,6 @@ type ActiveStripeSubscriptions = {
       id: string;
     }[];
   };
-};
-
-export const getStripeSubscriptionByEmail = async ({
-  request,
-  context,
-}: {
-  request: ZuploRequest;
-  context: ZuploContext;
-}): Promise<ActiveStripeSubscriptions | ErrorResponse> => {
-  const userInfo = await getUserInfo(request, context);
-
-  if (userInfo instanceof ErrorResponse) {
-    return userInfo;
-  }
-
-  const cache = new MemoryZoneReadThroughCache<ActiveStripeSubscriptions>(
-    "active-stripe-subscription",
-    context
-  );
-
-  const cachedData = await cache.get(userInfo.email);
-
-  if (cachedData) {
-    return cachedData;
-  }
-
-  const stripeCustomer = await getStripeCustomer(userInfo.email, context.log);
-
-  if (stripeCustomer instanceof ErrorResponse) {
-    context.log.warn("customer not found in stripe", {
-      email: userInfo.email,
-    });
-    return stripeCustomer;
-  }
-
-  const activeSubscription = await getActiveStripeSubscription({
-    stripeCustomerId: stripeCustomer.id,
-    logger: context.log,
-  });
-
-  if (activeSubscription instanceof ErrorResponse) {
-    return activeSubscription;
-  }
-
-  cache.put(userInfo.email, activeSubscription, 3600);
-
-  return activeSubscription;
 };
 
 export const getActiveStripeSubscription = async ({

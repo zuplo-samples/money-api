@@ -1,7 +1,8 @@
 import { ZuploContext, ZuploRequest } from "@zuplo/runtime";
-import { getStripeSubscriptionByEmail } from "../../services/stripe"
-import { getUserInfo } from "../../utils/user-info";
+import { getUserInfo } from "../../services/auth0";
 import { ErrorResponse } from "../../types";
+import { environment } from "@zuplo/runtime";
+import { getStripeSubscriptionByEmail } from "../subscription/get-subscription";
 
 interface CreateConsumerRequestBody {
   description: string;
@@ -34,8 +35,6 @@ export async function createConsumer(
   });
 }
 
-import { environment } from "@zuplo/runtime";
-
 export const createAPIKeyConsumer = async ({
   email,
   description,
@@ -47,9 +46,7 @@ export const createAPIKeyConsumer = async ({
   const body = {
     name: keyName,
     description: description,
-    managers: [
-      email
-    ],
+    managers: [email],
     metadata: {
       stripeCustomerId,
     },
@@ -72,4 +69,3 @@ export const createAPIKeyConsumer = async ({
 
   return response;
 };
-

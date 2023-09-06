@@ -1,7 +1,7 @@
 import { ZuploContext, ZuploRequest } from "@zuplo/runtime";
-import { getUserInfo } from "../../utils/user-info";
-import { getStripeSubscriptionByEmail } from "../../services/stripe";
+import { getUserInfo } from "../../services/auth0";
 import { ErrorResponse } from "../../types";
+import { getStripeSubscriptionByEmail } from "../subscription/get-subscription";
 
 export default async function checkSubscriptionAndAddEmail(
   request: ZuploRequest,
@@ -26,4 +26,3 @@ export default async function checkSubscriptionAndAddEmail(
 
   return request;
 }
-

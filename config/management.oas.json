@@ -54,7 +54,7 @@
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
-            "export": "default",
+            "export": "stripeActiveSubscription",
             "module": "$import(./modules/handlers/subscription/get-subscription)",
             "options": {}
           },
@@ -78,7 +78,7 @@
           "corsPolicy": "anything-goes",
           "handler": {
             "export": "default",
-            "module": "$import(./modules/handlers/subscription/usage/get-usage)",
+            "module": "$import(./modules/handlers/subscription/get-usage)",
             "options": {}
           },
           "policies": {

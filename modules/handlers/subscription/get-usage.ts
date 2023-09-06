@@ -1,10 +1,8 @@
 import { ZuploContext, ZuploRequest } from "@zuplo/runtime";
-import { getUserInfo } from "../../../utils/user-info";
-import {
-  getStripeSubscriptionByEmail,
-  getSubscriptionItemUsage,
-} from "../../../services/stripe";
-import { ErrorResponse } from "../../../types";
+import { getUserInfo } from "../../services/auth0";
+import { getSubscriptionItemUsage } from "../../services/stripe";
+import { ErrorResponse } from "../../types";
+import { getStripeSubscriptionByEmail } from "./get-subscription";
 
 export default async function (request: ZuploRequest, context: ZuploContext) {
   const userInfo = await getUserInfo(request, context);
