@@ -4,21 +4,10 @@
   "author": "",
   "copyright": "",
   "scripts": {
-    "dev": "zuplo dev",
-    "build": "zuplo build",
-    "test": "zuplo test",
-    "postinstall": "husky install"
+    "dev": "zup dev"
   },
   "dependencies": {
-    "@zuplo/cli": "^1.45.0-local-development.18",
-    "@zuplo/core": "^5.1148.0",
-    "@zuplo/react-api-key-manager": "^1.0.0",
-    "@zuplo/runtime": "^5.1148.0"
+    "zuplo": "latest"
   },
-  "devDependencies": {
-    "@types/chai": "4.3.4",
-    "@zuplo/test": "*",
-    "chai": "4.3.4",
-    "husky": "^7.0.4"
-  }
+  "devDependencies": {}
 }

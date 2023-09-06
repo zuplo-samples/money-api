@@ -2,7 +2,6 @@
   "json.schemas": [
     {
       "fileMatch": ["config/*.oas.json"],
-      // If you use OpenAPI 3.0 change this to https://cdn.zuplo.com/schemas/openapi-v3.0-zuplo.json
       "url": "https://cdn.zuplo.com/schemas/openapi-v3.1-zuplo.json"
     },
     {
