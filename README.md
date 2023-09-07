@@ -148,7 +148,7 @@ start the Developer Console.
     ```txt title=.env.local {1}
     NEXT_PUBLIC_API_URL=https://you-url-here.d2.zuplo.dev
     NEXT_PUBLIC_AUTH0_DOMAIN=zuplo-samples.us.auth0.com
-    NEXT_PUBLIC_AUTH0_CLIENT_ID=OFNbP5hhtsCHkBsXHEtWO72kKQvJtgI3
+    NEXT_PUBLIC_AUTH0_CLIENT_ID=E45HVjhgkvtZptsiS6wapekDS7rnfHOF
     NEXT_PUBLIC_AUTH0_AUDIENCE=https://api.example.com/
     ```
 
