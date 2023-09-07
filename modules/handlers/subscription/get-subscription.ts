@@ -6,7 +6,7 @@ import {
   ActiveStripeSubscriptions,
   getActiveStripeSubscription,
   getStripeCustomer,
-} from "modules/services/stripe";
+} from "../../services/stripe";
 
 export async function stripeActiveSubscription(
   request: ZuploRequest,
