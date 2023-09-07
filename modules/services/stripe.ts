@@ -33,6 +33,8 @@ export const getStripeCustomer = async (
       `/v1/customers?email=${email}`
     );
 
+    logger.info("customerSearchResult", customerSearchResult)
+
     if (customerSearchResult.data.length === 0) {
       console.warn("User not found in Stripe", email);
       return new ErrorResponse(GetStripeDetailsErrorResponse.NotPayingCustomer);
