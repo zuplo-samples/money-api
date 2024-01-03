@@ -3,8 +3,6 @@ import { environment } from "@zuplo/runtime";
 import { ErrorResponse } from "../types";
 import { Stripe } from "stripe";
 
-
-
 const STRIPE_API_KEY = environment.STRIPE_API_KEY || "";
 
 export const stripe = new Stripe(STRIPE_API_KEY, {
@@ -90,16 +88,6 @@ export const getStripeProducts = async (logger: Logger): Promise<StripeProduct[]
   }
 };
 
-export const stripeRequest = async (path: string, options?: RequestInit) => {
-  return fetch("https://api.stripe.com" + path, {
-    ...options,
-    headers: {
-      ...options?.headers,
-      Authorization: `Bearer ${STRIPE_API_KEY}`,
-    },
-  }).then((res) => res.json());
-};
-
 type StripeCustomer = {
   id: string;
 };
@@ -115,18 +103,16 @@ export const getStripeCustomer = async (
   logger: Logger
 ): Promise<StripeCustomer | ErrorResponse> => {
   try {
-    const customerSearchResult = await stripeRequest(
-      `/v1/customers?email=${email}`
-    );
+    const customer = await stripe.customers.list({
+      limit: 1,
+      email,
+    });
 
-    logger.info("customerSearchResult", customerSearchResult)
-
-    if (customerSearchResult.data.length === 0) {
-      logger.warn("User not found in Stripe", email);
+    if (customer.data.length === 0) {
       return new ErrorResponse(GetStripeDetailsErrorResponse.NotPayingCustomer);
     }
 
-    return customerSearchResult.data[0] as StripeCustomer;
+    return customer.data[0];
   } catch (err) {
     logger.error(err);
     return new ErrorResponse(
@@ -136,48 +122,32 @@ export const getStripeCustomer = async (
   }
 };
 
-export type ActiveStripeSubscriptions = {
-  id: string;
-  customer: string;
-  plan: {
-    usage_type: "metered" | "licensed";
-  };
-  items: {
-    data: {
-      id: string;
-    }[];
-  };
-};
-
 export const getActiveStripeSubscription = async ({
   stripeCustomerId,
   logger,
 }: {
   stripeCustomerId: string;
   logger: Logger;
-}): Promise<ActiveStripeSubscriptions | ErrorResponse> => {
-  const customerSubscription = await stripeRequest(
-    "/v1/subscriptions?customer=" + stripeCustomerId + "&status=active&limit=1"
-  );
-
-  if (customerSubscription.data.length === 0) {
-    logger.warn("customer has no subscription", {
-      stripeCustomerId,
+}): Promise<Stripe.Subscription | ErrorResponse> => {
+  try {
+    const customerSubscriptions = await stripe.subscriptions.list({
+      customer: stripeCustomerId,
+      status: "active",
+      limit: 1,
     });
-    return new ErrorResponse(GetStripeDetailsErrorResponse.NoSubscription);
-  }
 
-  if (
-    !customerSubscription.data[0].plan ||
-    customerSubscription.data[0].status !== "active"
-  ) {
-    logger.warn("customer has no active subscription plan", {
-      stripeCustomerId,
-    });
-    return new ErrorResponse(GetStripeDetailsErrorResponse.NoSubscription);
-  }
+    if (customerSubscriptions.data.length === 0) {
+      logger.info("customer has no subscription", {
+        stripeCustomerId,
+      });
+      return new ErrorResponse(GetStripeDetailsErrorResponse.NoSubscription);
+    }
 
-  return customerSubscription.data[0];
+    return customerSubscriptions.data[0];
+  } catch (err) {
+    logger.error("Failed to get active stripe subscription: ", err);
+    return new ErrorResponse("Failed to get active subscription.", 500);
+  }
 };
 
 type SubscriptionItemUsage = {
@@ -185,38 +155,52 @@ type SubscriptionItemUsage = {
 };
 
 export async function getSubscriptionItemUsage(
-  subscriptionItemId: string
+  subscriptionItemId: string,
+  logger: Logger
 ): Promise<SubscriptionItemUsage | ErrorResponse> {
-  const subscriptionItemUsageRecords = await stripeRequest(
-    "/v1/subscription_items/" + subscriptionItemId + "/usage_record_summaries"
-  );
 
-  if (subscriptionItemUsageRecords.data.length === 0) {
-    return new ErrorResponse(GetStripeDetailsErrorResponse.NoUsage);
+  try {
+    const subscriptionItemUsage = await stripe.subscriptionItems.listUsageRecordSummaries(
+      subscriptionItemId,
+      {
+        limit: 1,
+      }
+    )
+
+    if (subscriptionItemUsage.data.length === 0) {
+      return new ErrorResponse(GetStripeDetailsErrorResponse.NoUsage);
+    }
+
+    return {
+      total_usage: subscriptionItemUsage.data[0].total_usage,
+    };
+  } catch (err) {
+    logger.error("Failed to get subscription item usage: ", err);
+    return new ErrorResponse("Failed to get subscription usage.", 500);
   }
-
-  return subscriptionItemUsageRecords.data[0];
 }
 
-export const getStripeProduct = async (productId: string) => {
-  return stripeRequest("/v1/products/" + productId);
+export const getStripeProduct = async (productId: string, logger: Logger): Promise<Stripe.Product | ErrorResponse> => {
+  try {
+    const product = await stripe.products.retrieve(productId);
+    return product;
+  } catch (err) {
+    logger.error("Failed to get stripe product: ", err);
+    return new ErrorResponse("Failed to find subscribed product.", 500);
+  }
 };
 
 export const triggerMeteredSubscriptionItemUsage = async (
   subscriptionItemId: string,
-  quantity: number
+  quantity: number,
+  logger: Logger
 ) => {
-  const params = new URLSearchParams();
-  params.append("quantity", quantity.toString());
-
-  return stripeRequest(
-    `/v1/subscription_items/${subscriptionItemId}/usage_records`,
-    {
-      body: params,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    }
-  );
+  try {
+    return stripe.subscriptionItems.createUsageRecord(subscriptionItemId, {
+      quantity,
+    });
+  } catch (err) {
+    logger.error("Failed to trigger metered subscription item usage: ", err);
+    return new ErrorResponse("Could not process request.", 500);
+  }
 };

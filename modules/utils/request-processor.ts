@@ -11,7 +11,7 @@ type CustomerUsageDetails = {
 
 const stripeUsageUpdateDispatcher = async (
   customerUsageDetails: CustomerUsageDetails[],
-  _: Logger
+  logger: Logger
 ) => {
   // when we get here, we know that we have a batch of
   // usage records for a single subscription item
@@ -24,7 +24,8 @@ const stripeUsageUpdateDispatcher = async (
   // sends the usage record to stripe
   await triggerMeteredSubscriptionItemUsage(
     customerUsageDetails[0].subscriptionItemId,
-    totalRequests
+    totalRequests,
+    logger
   );
 };
 
