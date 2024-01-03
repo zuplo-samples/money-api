@@ -67,6 +67,52 @@
         "operationId": "db8b3641-e6c0-4f3e-9220-69a0b1e8f6bc"
       }
     },
+    "/v1/subscription/create-checkout": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "get": {
+        "summary": "Create checkout session",
+        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "createCheckoutSession",
+            "module": "$import(./modules/handlers/subscription/create-checkout)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "auth0-jwt-auth-inbound"
+            ]
+          }
+        },
+        "operationId": "1cefbfe4-7025-4610-99f7-062e0a7f1d23"
+      }
+    },
+    "/v1/subscription/products": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "get": {
+        "summary": "Get subscription products",
+        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "getSubscriptionProducts",
+            "module": "$import(./modules/handlers/subscription/products)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "auth0-jwt-auth-inbound"
+            ]
+          }
+        },
+        "operationId": "130e009d-523e-4bb2-bd04-c95620327e7d"
+      }
+    },
     "/v1/subscription/usage": {
       "x-zuplo-path": {
         "pathMode": "open-api"
