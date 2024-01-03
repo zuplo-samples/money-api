@@ -7,6 +7,7 @@
     "dev": "zup dev"
   },
   "dependencies": {
-    "zuplo": "^1.20230906.2330"
+    "stripe": "^14.10.0",
+    "zuplo": "^1.20240101.803"
   }
 }
