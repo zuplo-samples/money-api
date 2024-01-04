@@ -25,17 +25,21 @@ Stripe is used to manage the subscription of your users to your API. In this sec
 
 Steps:
 
-1. Log in to Stripe https://stripe.com (if you're creating a new account, you can skip the section of _Activate payments on your account_)
+#### 1. Log in to Stripe
 
-2. Create a subscription Product
+Login to your account in https://stripe.com.
 
-Go to\* **_Products_** and click **_Add a product_**.
+If you're creating a new account, you can skip the section of _Activate payments on your account_.
+
+#### 2. Create a subscription Product
+
+Go to **_Products_** and click **_Add a product_**.
 
 Now create a product with the following details:
 
 ![Stripe Add Product Step 2](./assets/stripe-add-product-step-2.png)
 
-3. Hold on to your Stripe Secret Key
+#### 3. Hold on to your Stripe Secret Key
 
 This Key will be used in the next step to configure the Zuplo API Gateway.
 
