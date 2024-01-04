@@ -2,9 +2,8 @@ import { ZuploContext, ZuploRequest } from "@zuplo/runtime";
 import { getUserInfo } from "../../services/auth0";
 import { ErrorResponse, JsonResponse } from "../../types";
 import {
-  createOrGetCustomer
+  createOrGetCustomer, stripeRequest
 } from "../../services/stripe";
-import { stripe } from "../../services/stripe";
 
 export async function createCheckoutSession(
   request: ZuploRequest,
@@ -29,7 +28,7 @@ export async function createCheckoutSession(
 
   let price;
   try {
-    price = await stripe.prices.retrieve(priceId);
+    price = await stripeRequest(`/v1/prices/${priceId}`);
 
     if (price.type !== "recurring") {
       return new ErrorResponse("Pricing model not supported.", 400);
@@ -51,25 +50,29 @@ export async function createCheckoutSession(
   // 4. Create the Stripe Checkout Session
   let stripeSession;
   try {
-    stripeSession = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      billing_address_collection: "auto",
-      customer: stripeCustomer.id,
-      customer_update: {
-        address: "auto",
-        name: "auto",
-        shipping: "never",
-      },
-      line_items: [
-        {
-          price: price.id,
+
+    stripeSession = await stripeRequest(
+      "/v1/checkout/sessions",
+      {
+        method: "POST",
+        body: new URLSearchParams({
+          'payment_method_types[]': 'card',
+          'billing_address_collection': 'auto',
+          'customer': stripeCustomer.id,
+          'customer_update[address]': 'auto',
+          'customer_update[name]': 'auto',
+          'customer_update[shipping]': 'never',
+          'line_items[0][price]': priceId,
+          'mode': 'subscription',
+          'allow_promotion_codes': 'true',
+          'success_url': `${redirectUrl}/dashboard`,
+          'cancel_url': `${redirectUrl}/`,
+        }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-      ],
-      mode: "subscription",
-      allow_promotion_codes: true,
-      success_url: `${redirectUrl}/dashboard`,
-      cancel_url: `${redirectUrl}/`,
-    });
+      }
+    );
   } catch (err) {
     context.log.error("Failed to create checkout session: ", err);
     return new ErrorResponse("Failed to create checkout session.", 500);

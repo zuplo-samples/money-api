@@ -1,13 +1,19 @@
 import { Logger } from "@zuplo/runtime";
 import { environment } from "@zuplo/runtime";
 import { ErrorResponse } from "../types";
-import { Stripe } from "stripe";
 
-const STRIPE_API_KEY = environment.STRIPE_API_KEY || "";
+const STRIPE_API_KEY = environment.STRIPE_API_KEY;
 
-export const stripe = new Stripe(STRIPE_API_KEY, {
-  apiVersion: "2023-10-16",
-});
+export const stripeRequest = async (path: string, options?: RequestInit) => {
+  return fetch("https://api.stripe.com" + path, {
+    ...options,
+    headers: {
+      ...options?.headers,
+      Authorization: `Bearer ${STRIPE_API_KEY}`,
+    },
+  }).then((res) => res.json());
+};
+
 
 export const createOrGetCustomer = async ({
   email,
@@ -15,20 +21,30 @@ export const createOrGetCustomer = async ({
 }: {
   email: string;
   logger: Logger;
-}): Promise<Stripe.Customer | ErrorResponse> => {
+}): Promise<StripeCustomer | ErrorResponse> => {
   try {
-    const existingCustomer = await stripe.customers.list({
-      limit: 1,
-      email,
-    });
+    const customerSearchResult = await stripeRequest(
+      `/v1/customers?email=${email}`
+    );
 
-    if (existingCustomer.data.length > 0) {
-      return existingCustomer.data[0];
+    if (customerSearchResult.data.length > 0) {
+      return customerSearchResult.data[0] as StripeCustomer;
     }
 
-    const newCustomer = await stripe.customers.create({
-      email,
-    });
+    const newCustomer = await stripeRequest(
+      `/v1/customers`,
+      {
+        method: "POST",
+        body: new URLSearchParams({
+          email,
+        }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    logger.info("Created new customer: ", newCustomer);
 
     return newCustomer;
   } catch (err) {
@@ -49,18 +65,14 @@ type StripeProduct = {
 
 export const getStripeProducts = async (logger: Logger): Promise<StripeProduct[] | ErrorResponse> => {
   try {
-    const subscriptions = await stripe.products.list({
-      limit: 100,
-    });
+    const products = await stripeRequest("/v1/products");
 
-    const prices = await stripe.prices.list({
-      limit: 100,
-    });
+    const prices = await stripeRequest("/v1/prices");
 
-    const data = subscriptions.data
-      .map((subscription) => {
+    const data = products.data
+      .map((product) => {
         const price = prices.data.find(
-          (price) => price.product === subscription.id,
+          (price) => price.product === product.id,
         );
 
         if (!price) {
@@ -68,17 +80,17 @@ export const getStripeProducts = async (logger: Logger): Promise<StripeProduct[]
         }
 
         return {
-          id: subscription.id,
-          name: subscription.name,
-          description: subscription.description,
+          id: product.id,
+          name: product.name,
+          description: product.description,
           price: price.unit_amount ? price.unit_amount / 100 : 0,
           priceId: price.id,
           currency: price.currency,
         };
       })
       .filter(
-        (subscription): subscription is NonNullable<typeof subscription> =>
-          subscription !== null,
+        (product): product is NonNullable<typeof product> =>
+          product !== null,
       );
 
     return data;
@@ -103,16 +115,18 @@ export const getStripeCustomer = async (
   logger: Logger
 ): Promise<StripeCustomer | ErrorResponse> => {
   try {
-    const customer = await stripe.customers.list({
-      limit: 1,
-      email,
-    });
+    const customerSearchResult = await stripeRequest(
+      `/v1/customers?email=${email}`
+    );
 
-    if (customer.data.length === 0) {
+    logger.info("customerSearchResult", customerSearchResult)
+
+    if (customerSearchResult.data.length === 0) {
+      logger.warn("User not found in Stripe", email);
       return new ErrorResponse(GetStripeDetailsErrorResponse.NotPayingCustomer);
     }
 
-    return customer.data[0];
+    return customerSearchResult.data[0] as StripeCustomer;
   } catch (err) {
     logger.error(err);
     return new ErrorResponse(
@@ -122,32 +136,48 @@ export const getStripeCustomer = async (
   }
 };
 
+export type ActiveStripeSubscriptions = {
+  id: string;
+  customer: string;
+  plan: {
+    usage_type: "metered" | "licensed";
+  };
+  items: {
+    data: {
+      id: string;
+    }[];
+  };
+};
+
 export const getActiveStripeSubscription = async ({
   stripeCustomerId,
   logger,
 }: {
   stripeCustomerId: string;
   logger: Logger;
-}): Promise<Stripe.Subscription | ErrorResponse> => {
-  try {
-    const customerSubscriptions = await stripe.subscriptions.list({
-      customer: stripeCustomerId,
-      status: "active",
-      limit: 1,
+}): Promise<ActiveStripeSubscriptions | ErrorResponse> => {
+  const customerSubscription = await stripeRequest(
+    "/v1/subscriptions?customer=" + stripeCustomerId + "&status=active&limit=1"
+  );
+
+  if (customerSubscription.data.length === 0) {
+    logger.warn("customer has no subscription", {
+      stripeCustomerId,
     });
-
-    if (customerSubscriptions.data.length === 0) {
-      logger.info("customer has no subscription", {
-        stripeCustomerId,
-      });
-      return new ErrorResponse(GetStripeDetailsErrorResponse.NoSubscription);
-    }
-
-    return customerSubscriptions.data[0];
-  } catch (err) {
-    logger.error("Failed to get active stripe subscription: ", err);
-    return new ErrorResponse("Failed to get active subscription.", 500);
+    return new ErrorResponse(GetStripeDetailsErrorResponse.NoSubscription);
   }
+
+  if (
+    !customerSubscription.data[0].plan ||
+    customerSubscription.data[0].status !== "active"
+  ) {
+    logger.warn("customer has no active subscription plan", {
+      stripeCustomerId,
+    });
+    return new ErrorResponse(GetStripeDetailsErrorResponse.NoSubscription);
+  }
+
+  return customerSubscription.data[0];
 };
 
 type SubscriptionItemUsage = {
@@ -155,52 +185,38 @@ type SubscriptionItemUsage = {
 };
 
 export async function getSubscriptionItemUsage(
-  subscriptionItemId: string,
-  logger: Logger
+  subscriptionItemId: string
 ): Promise<SubscriptionItemUsage | ErrorResponse> {
+  const subscriptionItemUsageRecords = await stripeRequest(
+    "/v1/subscription_items/" + subscriptionItemId + "/usage_record_summaries"
+  );
 
-  try {
-    const subscriptionItemUsage = await stripe.subscriptionItems.listUsageRecordSummaries(
-      subscriptionItemId,
-      {
-        limit: 1,
-      }
-    )
-
-    if (subscriptionItemUsage.data.length === 0) {
-      return new ErrorResponse(GetStripeDetailsErrorResponse.NoUsage);
-    }
-
-    return {
-      total_usage: subscriptionItemUsage.data[0].total_usage,
-    };
-  } catch (err) {
-    logger.error("Failed to get subscription item usage: ", err);
-    return new ErrorResponse("Failed to get subscription usage.", 500);
+  if (subscriptionItemUsageRecords.data.length === 0) {
+    return new ErrorResponse(GetStripeDetailsErrorResponse.NoUsage);
   }
+
+  return subscriptionItemUsageRecords.data[0];
 }
 
-export const getStripeProduct = async (productId: string, logger: Logger): Promise<Stripe.Product | ErrorResponse> => {
-  try {
-    const product = await stripe.products.retrieve(productId);
-    return product;
-  } catch (err) {
-    logger.error("Failed to get stripe product: ", err);
-    return new ErrorResponse("Failed to find subscribed product.", 500);
-  }
+export const getStripeProduct = async (productId: string) => {
+  return stripeRequest("/v1/products/" + productId);
 };
 
 export const triggerMeteredSubscriptionItemUsage = async (
   subscriptionItemId: string,
-  quantity: number,
-  logger: Logger
+  quantity: number
 ) => {
-  try {
-    return stripe.subscriptionItems.createUsageRecord(subscriptionItemId, {
-      quantity,
-    });
-  } catch (err) {
-    logger.error("Failed to trigger metered subscription item usage: ", err);
-    return new ErrorResponse("Could not process request.", 500);
-  }
+  const params = new URLSearchParams();
+  params.append("quantity", quantity.toString());
+
+  return stripeRequest(
+    `/v1/subscription_items/${subscriptionItemId}/usage_records`,
+    {
+      body: params,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
 };
