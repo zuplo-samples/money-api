@@ -37,7 +37,7 @@ Go to **_Products_** and click **_Add a product_**.
 
 Now create a product with the following details:
 
-![Stripe Add Product Step 2](./assets/stripe-add-product-step-2.png)
+![Stripe Create Product](https://cdn.zuplo.com/assets/ce837e96-5f8d-4511-b7d5-f8b0e9ba3c25.png)
 
 #### 3. Hold on to your Stripe Secret Key
 
