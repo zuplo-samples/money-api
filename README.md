@@ -93,7 +93,7 @@ All done! Your auth translation service is all ready to go 👏.
 
 ### 3- Build the Web App
 
-This is a sample NextJS project that will be used to allow users to sign up and
+We have prepared a [sample NextJS project](https://github.com/zuplo-samples/money-api-dashboard) that will be used to allow users to sign up and
 subscribe to your API.
 
 Clone the project by running the following command. You will be asked to name your project.
