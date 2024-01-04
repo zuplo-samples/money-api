@@ -35,35 +35,7 @@ Now create a product with the following details:
 
 ![Stripe Add Product Step 2](./assets/stripe-add-product-step-2.png)
 
-3. Create a Pricing Table to embed on the web-app
-
-Go back to _Product_ menu and click on the _Pricing tables_.
-
-Fill in the details as shown below:
-
-![](./assets/stripe-add-pricing-table-2.png)
-
-4. Add the Pricing table to your website
-
-Copy the Pricing Table code which will be used in the web app:
-
-![](./assets/stripe-add-pricing-table-4.png)
-
-Paste the code in the file [`/dashboard/components/stripe-pricing-table.tsx`](./dashboard/components/stripe-pricing-table.tsx)
-
-```diff
-<div
-  dangerouslySetInnerHTML={{
-    __html: `
-+        <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
-+        <stripe-pricing-table pricing-table-id="prctbl_1234ABC" publishable-key="pk_test_1234ABC">
-+        </stripe-pricing-table>
-      `,
-  }}
-/>
-```
-
-5. Hold on to your Stripe Secret Key
+3. Hold on to your Stripe Secret Key
 
 This Key will be used in the next step to configure the Zuplo API Gateway.
 
@@ -146,7 +118,7 @@ start the Developer Console.
     `NEXT_PUBLIC_API_URL` variable using the URL from the previous step:
 
     ```txt title=.env.local {1}
-    NEXT_PUBLIC_API_URL=https://you-url-here.d2.zuplo.dev
+    NEXT_PUBLIC_API_URL=http://localhost:9000
     NEXT_PUBLIC_AUTH0_DOMAIN=zuplo-samples.us.auth0.com
     NEXT_PUBLIC_AUTH0_CLIENT_ID=E45HVjhgkvtZptsiS6wapekDS7rnfHOF
     NEXT_PUBLIC_AUTH0_AUDIENCE=https://api.example.com/
