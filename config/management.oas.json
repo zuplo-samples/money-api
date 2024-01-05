@@ -41,7 +41,8 @@
             ]
           }
         },
-        "operationId": "ce8c9b1f-e146-4c67-b05a-8fd69cd0121b"
+        "operationId": "ce8c9b1f-e146-4c67-b05a-8fd69cd0121b",
+        "x-internal": true
       }
     },
     "/v1/subscription": {
@@ -64,7 +65,8 @@
             ]
           }
         },
-        "operationId": "db8b3641-e6c0-4f3e-9220-69a0b1e8f6bc"
+        "operationId": "db8b3641-e6c0-4f3e-9220-69a0b1e8f6bc",
+        "x-internal": true
       }
     },
     "/v1/subscription/create-checkout": {
@@ -87,7 +89,8 @@
             ]
           }
         },
-        "operationId": "1cefbfe4-7025-4610-99f7-062e0a7f1d23"
+        "operationId": "1cefbfe4-7025-4610-99f7-062e0a7f1d23",
+        "x-internal": true
       }
     },
     "/v1/subscription/products": {
@@ -110,7 +113,8 @@
             ]
           }
         },
-        "operationId": "130e009d-523e-4bb2-bd04-c95620327e7d"
+        "operationId": "130e009d-523e-4bb2-bd04-c95620327e7d",
+        "x-internal": true
       }
     },
     "/v1/subscription/usage": {
@@ -133,7 +137,8 @@
             ]
           }
         },
-        "operationId": "5345aa88-d304-400f-a41b-8ef682fced5c"
+        "operationId": "5345aa88-d304-400f-a41b-8ef682fced5c",
+        "x-internal": true
       }
     },
     "/v1/subscription/create-customer-portal-session": {
@@ -156,7 +161,8 @@
             ]
           }
         },
-        "operationId": "ca529cc2-bc9c-4a27-a8f3-741322d06dd0"
+        "operationId": "ca529cc2-bc9c-4a27-a8f3-741322d06dd0",
+        "x-internal": true
       }
     },
     "/v1/consumers/my": {
@@ -181,7 +187,8 @@
             "outbound": []
           }
         },
-        "operationId": "d86ecbdc-2aa7-4bd0-9e61-4245ecd1d5cd"
+        "operationId": "d86ecbdc-2aa7-4bd0-9e61-4245ecd1d5cd",
+        "x-internal": true
       },
       "post": {
         "summary": "Create consumer",
@@ -209,7 +216,8 @@
             }
           }
         },
-        "operationId": "bd902f32-26d8-481d-b053-276d6a694781"
+        "operationId": "bd902f32-26d8-481d-b053-276d6a694781",
+        "x-internal": true
       }
     },
     "/v1/consumers/{consumerName}/roll": {
@@ -235,7 +243,7 @@
           }
         },
         "operationId": "f73c7996-b6bc-48b8-815b-ead885d723ed",
-        "x-internal": false
+        "x-internal": true
       }
     },
     "/v1/consumers/{consumerName}/keys/{keyId}": {
@@ -260,7 +268,8 @@
             "outbound": []
           }
         },
-        "operationId": "fa92d9f2-3d03-48e9-b475-19206b52f64a"
+        "operationId": "fa92d9f2-3d03-48e9-b475-19206b52f64a",
+        "x-internal": true
       }
     },
     "/v1/consumers/{consumerName}": {
@@ -285,7 +294,8 @@
             "outbound": []
           }
         },
-        "operationId": "84960874-662e-4454-ae3f-5f53611ba072"
+        "operationId": "84960874-662e-4454-ae3f-5f53611ba072",
+        "x-internal": true
       },
       "delete": {
         "summary": "Delete consumer",
@@ -305,7 +315,8 @@
             ]
           }
         },
-        "operationId": "9dcf25f3-7e22-4338-8255-c55e7165e9c2"
+        "operationId": "9dcf25f3-7e22-4338-8255-c55e7165e9c2",
+        "x-internal": true
       }
     }
   }
