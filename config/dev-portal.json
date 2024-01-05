@@ -1,4 +1,15 @@
 {
   "$schema": "https://cdn.zuplo.com/schemas/dev-portal.json",
-  "enableAuthentication": true
+  "enableAuthentication": true,
+  "enabled": true,
+  "authentication": {
+    "provider": "auth0",
+    "authority": "https://zuplo-samples.us.auth0.com/",
+    "jwksUrl": "https://zuplo-samples.us.auth0.com/.well-known/jwks.json",
+    "devPortalClient": {
+      "clientId": "E45HVjhgkvtZptsiS6wapekDS7rnfHOF",
+      "audience": "https://api.example.com/"
+    }
+  },
+  "generateExamples": true
 }
