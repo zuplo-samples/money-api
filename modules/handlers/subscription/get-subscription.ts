@@ -6,6 +6,7 @@ import {
   ActiveStripeSubscriptions,
   getActiveStripeSubscription,
   getStripeCustomer,
+  getStripeProductById,
 } from "../../services/stripe";
 
 export async function stripeActiveSubscription(
@@ -18,10 +19,23 @@ export async function stripeActiveSubscription(
     return userInfo;
   }
 
-  return await getStripeSubscriptionByEmail({
+  const currentSubscription = await getStripeSubscriptionByEmail({
     request,
     context,
   });
+
+  if (currentSubscription instanceof ErrorResponse) {
+    return currentSubscription;
+  }
+
+  const currentProduct = await getStripeProductById(
+    currentSubscription.plan.product,
+  );
+
+  return {
+    ...currentSubscription,
+    product: currentProduct,
+  };
 }
 
 export const getStripeSubscriptionByEmail = async ({

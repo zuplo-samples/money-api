@@ -62,8 +62,7 @@ type StripeProduct = {
   currency: string;
 };
 
-
-export const getStripeProducts = async (logger: Logger): Promise<StripeProduct[] | ErrorResponse> => {
+export const getAllStripeProducts = async (logger: Logger): Promise<StripeProduct[] | ErrorResponse> => {
   try {
     const products = await stripeRequest("/v1/products");
 
@@ -141,6 +140,7 @@ export type ActiveStripeSubscriptions = {
   customer: string;
   plan: {
     usage_type: "metered" | "licensed";
+    product: string;
   };
   items: {
     data: {
@@ -198,9 +198,25 @@ export async function getSubscriptionItemUsage(
   return subscriptionItemUsageRecords.data[0];
 }
 
-export const getStripeProduct = async (productId: string) => {
-  return stripeRequest("/v1/products/" + productId);
+export const getStripeProductById = async (productId: string): Promise<StripeProduct> => {
+  return await stripeRequest("/v1/products/" + productId);
 };
+
+export const getCustomerPortalSession = async (
+  customerId: string,
+  returnUrl: string
+) => {
+  return await stripeRequest("/v1/billing_portal/sessions", {
+    method: "POST",
+    body: new URLSearchParams({
+      customer: customerId,
+      return_url: returnUrl,
+    }),
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+}
 
 export const triggerMeteredSubscriptionItemUsage = async (
   subscriptionItemId: string,

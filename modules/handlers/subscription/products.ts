@@ -1,8 +1,8 @@
 import { ZuploContext } from "@zuplo/runtime";
-import { getStripeProducts } from "../../services/stripe";
+import { getAllStripeProducts } from "../../services/stripe";
 
 export async function getSubscriptionProducts(
   context: ZuploContext
 ) {
-  return await getStripeProducts(context.log);
+  return await getAllStripeProducts(context.log);
 }
