@@ -1,6 +1,0 @@
-{
-  "description": "A simple POST to the initial route",
-  "pathname": "/v1/$todosAndUsers",
-  "method": "GET",
-  "headers": {}
-}
