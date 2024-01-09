@@ -53,8 +53,7 @@ export class BatchDispatch<TPayload> {
           } catch (error) {
             this.#logger &&
               this.#logger.error(
-                `Uncaught error in BatchDispatcher named '${
-                  this.#dispatcherName
+                `Uncaught error in BatchDispatcher named '${this.#dispatcherName
                 }'}`,
                 error.message,
                 error.stack

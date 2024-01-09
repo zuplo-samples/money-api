@@ -25,7 +25,6 @@ const stripeUsageUpdateDispatcher = async (
   await triggerMeteredSubscriptionItemUsage(
     customerUsageDetails[0].subscriptionItemId,
     totalRequests,
-    logger
   );
 };
 

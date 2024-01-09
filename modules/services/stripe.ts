@@ -220,7 +220,7 @@ export const getCustomerPortalSession = async (
 
 export const triggerMeteredSubscriptionItemUsage = async (
   subscriptionItemId: string,
-  quantity: number
+  quantity: number,
 ) => {
   const params = new URLSearchParams();
   params.append("quantity", quantity.toString());
