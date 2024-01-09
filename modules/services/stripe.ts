@@ -90,7 +90,7 @@ export const getAllStripeProducts = async (logger: Logger): Promise<StripeProduc
       .filter(
         (product): product is NonNullable<typeof product> =>
           product !== null,
-      );
+      ).filter(product => product.active);
 
     return data;
   } catch (err) {
