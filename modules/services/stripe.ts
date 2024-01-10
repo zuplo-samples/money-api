@@ -80,6 +80,7 @@ export const getAllStripeProducts = async (logger: Logger): Promise<StripeProduc
 
         return {
           id: product.id,
+          active: product.active,
           name: product.name,
           description: product.description,
           price: price.unit_amount ? price.unit_amount / 100 : 0,
