@@ -1,8 +1,8 @@
 import { ZuploContext, ZuploRequest } from "@zuplo/runtime";
 import { getUserInfo } from "../../services/auth0";
+import { getCustomerPortalSession } from "../../services/stripe";
 import { ErrorResponse, JsonResponse } from "../../types";
 import { getStripeSubscriptionByEmail } from "./get-subscription";
-import { getCustomerPortalSession } from "modules/services/stripe";
 
 export default async function (request: ZuploRequest, context: ZuploContext) {
   const url = new URL(request.url);
